@@ -1,0 +1,18 @@
+spring:
+  cloud:
+    nacos:
+      server-addr: @nacos.addr@
+      password: @nacos.password@
+      username: @nacos.username@
+      discovery:
+        namespace: @nacos.service.namespace@
+        group: @nacos.service.group@
+      config:
+        import-check:
+          enabled: false
+        namespace: @nacos.service.namespace@
+        group: @nacos.service.group@
+  config:
+    import:
+      - nacos:kiwi-user-mongodb.yml
+      - nacos:kiwi-user-redis.yml

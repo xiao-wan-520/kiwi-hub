@@ -1,0 +1,9 @@
+server:
+  port: 8030
+
+spring:
+  application:
+    name: kiwi-hub-link
+  profiles:
+    active: @spring.profiles.active@
+    include: connect
