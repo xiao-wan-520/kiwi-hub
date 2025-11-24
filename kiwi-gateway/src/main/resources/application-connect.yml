@@ -14,3 +14,4 @@ spring:
         group: @nacos.service.group@
   config:
     import:
+      - nacos:kiwi-gateway-intercept.yml

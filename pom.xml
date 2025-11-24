@@ -17,9 +17,8 @@
 
     <modules>
         <module>kiwi-gateway</module>
-        <module>kiwi-user</module>
-        <module>kiwi-content</module>
-        <module>kiwi-link</module>
+        <module>kiwi-common</module>
+        <module>kiwi-service</module>
     </modules>
 
     <properties>
@@ -27,7 +26,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-boot.version>3.3.4</spring-boot.version>
-        <lombok.version>1.18.42</lombok.version>
+        <spring-boot-security.version>6.3.3</spring-boot-security.version>
         <spring-cloud.version>2023.0.3</spring-cloud.version>
         <spring-cloud-alibaba.version>2023.0.3.2</spring-cloud-alibaba.version>
         <commons.pool2.version>2.12.1</commons.pool2.version>
@@ -35,6 +34,7 @@
         <gson.version>2.11.0</gson.version>
         <hutool.version>5.8.36</hutool.version>
         <feign-okhttp.version>13.3</feign-okhttp.version>
+        <lombok.version>1.18.42</lombok.version>
 
         <spring.profiles.active>dev</spring.profiles.active>
         <nacos.addr>127.0.0.1:8848</nacos.addr>
@@ -124,6 +124,11 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-mongodb</artifactId>
                 <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-crypto</artifactId>
+                <version>${spring-boot-security.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

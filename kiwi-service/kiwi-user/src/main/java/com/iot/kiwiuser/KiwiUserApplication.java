@@ -1,5 +1,6 @@
-package com.iot.kiwigateway;
+package com.iot.kiwiuser;
 
+import com.iot.common.exception.handler.EnableGlobalExceptionHandler;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -7,12 +8,12 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 /**
  * @author wan
  */
+@EnableGlobalExceptionHandler
 @EnableDiscoveryClient
 @SpringBootApplication
-public class KiwiGatewayApplication {
+public class KiwiUserApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(KiwiGatewayApplication.class, args);
+        SpringApplication.run(KiwiUserApplication.class, args);
     }
-
 }
