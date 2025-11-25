@@ -2,13 +2,16 @@ package com.iot.kiwigateway.filter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.iot.kiwigateway.model.constant.AllowURIConstant;
+import com.iot.common.constant.HttpHeader;
+import com.iot.common.constant.SessionConstant;
 import com.iot.common.result.Result;
+import com.iot.common.result.ResultCodeEnum;
+import com.iot.kiwigateway.model.constant.URIConstant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
-import org.springframework.core.annotation.Order;
+import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,6 +22,7 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -26,12 +30,11 @@ import java.util.Set;
  * 职责是：“这个Session有效吗？有效就放行”。
  * @author wan
  */
-@Order(1)
 @Slf4j
 @Component
 @SuppressWarnings("deprecation")
 @RequiredArgsConstructor
-public class GatewayFilter implements GlobalFilter {
+public class GatewayFilter implements GlobalFilter, Ordered {
 
     private final ObjectMapper objectMapper;
 
@@ -41,24 +44,40 @@ public class GatewayFilter implements GlobalFilter {
      * 跳过验证的接口: 不需要token验证
      */
     private static final Set<String> SKIP_AUTH = Set.of(
-            AllowURIConstant.USER_LOGIN,
-            AllowURIConstant.USER_REGISTER
+            URIConstant.USER_LOGIN,
+            URIConstant.USER_REGISTER
     );
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         String path = request.getURI().getPath();
-        System.out.println( path);
 
         // 不需要token验证
         if (allowedPath(path)) {
             return chain.filter(exchange);
         }
 
+        // Session验证
+        // 注意：这里使用的是 WebFlux 的 getSession()，
+        // Spring Session 会根据 Cookie 中的 SESSIONID 自动去 Redis 查找
+        return exchange.getSession().flatMap(session -> {
+            Object sessionAttribute = session.getAttribute(SessionConstant.LOGIN_USER);
+            if (sessionAttribute == null) {
+                // 未登录
+                return returnErrorResponse(exchange, HttpStatus.UNAUTHORIZED,
+                        Result.result(ResultCodeEnum.UNAUTHORIZED).message("未登录"));
+            }
+            // 已登录,放入 Header 传递给下游微服务
+            Map<String, Object> sessionAttributeMap = (Map<String, Object>) sessionAttribute;
+            String id = (String) sessionAttributeMap.get(SessionConstant.ATTRIBUTE_ID);
 
-        // 继续走过滤器链
-        return chain.filter(exchange);
+            ServerHttpRequest successRequest = exchange.getRequest().mutate()
+                    .header(HttpHeader.USER_ID, id)
+                    .build();
+
+            return chain.filter(exchange.mutate().request(successRequest).build());
+        });
     }
 
     // 返回错误信息
@@ -90,5 +109,10 @@ public class GatewayFilter implements GlobalFilter {
             }
         }
         return false;
+    }
+
+    @Override
+    public int getOrder() {
+        return 1;
     }
 }

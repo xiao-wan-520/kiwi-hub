@@ -66,6 +66,12 @@
                 <artifactId>spring-boot-starter-data-redis</artifactId>
                 <version>${spring-boot.version}</version>
             </dependency>
+            <!-- Spring Session Redis 支持 -->
+            <dependency>
+                <groupId>org.springframework.session</groupId>
+                <artifactId>spring-session-data-redis</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
 
             <!-- 提供Redis连接池 -->
             <dependency>
@@ -73,6 +79,14 @@
                 <artifactId>commons-pool2</artifactId>
                 <version>${commons.pool2.version}</version>
             </dependency>
+
+            <!-- 如果没有这个，Gateway 无法以响应式方式连接 Redis，Session 就会回退到内存模式 -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+
             <!--七牛云-->
             <dependency>
                 <groupId>com.qiniu</groupId>

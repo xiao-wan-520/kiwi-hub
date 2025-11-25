@@ -24,4 +24,10 @@ public interface UserAuthService {
      * @return 登录结果
      */
     Result<Object> login(UserLoginDTO loginDTO);
+
+    /**
+     * 注销账号
+     * @param userId 用户 ID
+     */
+    void delete(String userId);
 }

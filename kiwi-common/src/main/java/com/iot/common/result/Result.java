@@ -58,6 +58,10 @@ public class Result<T> {
                 .data(data);
     }
 
+    public boolean isSuccess() {
+        return this.code.equals(ResultCodeEnum.SUCCESS.getCode());
+    }
+
     public Result<T> code(Integer code) {
         this.code = code;
         return this;
