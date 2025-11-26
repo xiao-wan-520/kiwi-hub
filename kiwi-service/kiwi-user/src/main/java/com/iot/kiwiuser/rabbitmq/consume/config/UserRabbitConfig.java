@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class UserRabbitConfig {
     @Bean
-    public Exchange userRwlationExchange() {
+    public Exchange userRelationExchange() {
         return ExchangeBuilder
                 .directExchange(RabbitConstant.USER_RELATION_EXCHANGE)
                 .durable(true)
@@ -29,9 +29,9 @@ public class UserRabbitConfig {
 
     // 绑定 RoutingKey
     @Bean
-    public Binding userRelationBinding(Queue userFollowQueue, Exchange userFollowExchange) {
-        return BindingBuilder.bind(userFollowQueue)
-                .to(userFollowExchange)
+    public Binding userRelationBinding(Queue userRelationQueue, Exchange userRelationExchange) {
+        return BindingBuilder.bind(userRelationQueue)
+                .to(userRelationExchange)
                 .with(RabbitConstant.USER_RELATION_ROUTING_KEY)
                 .noargs();
     }

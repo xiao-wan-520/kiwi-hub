@@ -1,4 +1,4 @@
-package com.iot.kiwiuser.rabbitmq.consume.config;
+package com.iot.kiwicontent.consume.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

@@ -15,3 +15,4 @@ spring:
   config:
     import:
       - nacos:kiwi-content-mongodb.yml
+      - nacos:kiwi-content-rabbitmq.yml

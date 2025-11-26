@@ -3,6 +3,7 @@ package com.iot.kiwicontent.model.pojo;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -30,6 +31,8 @@ public class Article {
     private List<String> tags;
 
     private LocalDateTime createdAt;
+
+    @Indexed
     private LocalDateTime updatedAt;
 
     // 嵌入文档

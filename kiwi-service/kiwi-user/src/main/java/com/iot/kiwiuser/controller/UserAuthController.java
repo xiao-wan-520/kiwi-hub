@@ -74,7 +74,7 @@ public class UserAuthController {
     }
 
     /**
-     * 注销当前账号
+     * 注销
      * @param session HttpSession
      * @param userId 用户 ID
      */
