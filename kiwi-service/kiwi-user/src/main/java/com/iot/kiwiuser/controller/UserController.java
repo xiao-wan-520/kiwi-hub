@@ -1,11 +1,13 @@
 package com.iot.kiwiuser.controller;
 
 import com.iot.common.constant.HttpHeader;
+import com.iot.common.result.PageResult;
 import com.iot.common.result.Result;
+import com.iot.kiwiuser.model.dto.UserProfileDTO;
+import com.iot.kiwiuser.model.vo.UserCardVO;
 import com.iot.kiwiuser.model.vo.UserDetailVO;
 import com.iot.kiwiuser.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -30,8 +32,16 @@ public class UserController {
         return Result.success(userService.getCurrentUserDetail(userId));
     }
 
+    /**
+     * 更新当前用户信息
+     * @param userId 用户ID
+     * @param profileDTO 用户信息
+     * @return 更新结果
+     */
     @PutMapping("/me/profile")
-    public Result<Object> updateProfile(@RequestBody Object profileDTO) {
+    public Result<Object> updateProfile(@RequestHeader(HttpHeader.USER_ID) String userId,
+                                        @ModelAttribute UserProfileDTO profileDTO) {
+        userService.updateProfile(userId, profileDTO);
         // 处理更新个人信息逻辑
         return Result.success();
     }
@@ -62,19 +72,33 @@ public class UserController {
         return userService.unfollow(userId, followUserId);
     }
 
-    @GetMapping("/{userId}/following")
-    public Result<Page<Object>> getFollowingList(@PathVariable Long userId,
-                                                 @RequestParam(defaultValue = "1") Integer pageNum,
-                                                 @RequestParam(defaultValue = "10") Integer pageSize) {
+    /**
+     * 获取关注列表
+     * @param userId 用户ID
+     * @param pageNum 页码
+     * @param pageSize 页大小
+     * @return 关注列表
+     */
+    @GetMapping("/following")
+    public Result<PageResult<UserCardVO>> getFollowingList(@RequestHeader(HttpHeader.USER_ID) String userId,
+                                                     @RequestParam(defaultValue = "1") Integer pageNum,
+                                                     @RequestParam(defaultValue = "10") Integer pageSize) {
         // 处理获取关注列表逻辑
-        return null;
+        return Result.success(userService.getFollowingList(userId, pageNum, pageSize));
     }
 
-    @GetMapping("/{userId}/followers")
-    public Result<Page<Object>> getFollowersList(@PathVariable Long userId,
-                                                 @RequestParam(defaultValue = "1") Integer pageNum,
-                                                 @RequestParam(defaultValue = "10") Integer pageSize) {
+    /**
+     * 获取粉丝列表
+     * @param userId 用户ID
+     * @param pageNum 页码
+     * @param pageSize 页大小
+     * @return 粉丝列表
+     */
+    @GetMapping("/followers")
+    public Result<PageResult<UserCardVO>> getFollowersList(@RequestHeader(HttpHeader.USER_ID) String userId,
+                                                           @RequestParam(defaultValue = "1") Integer pageNum,
+                                                           @RequestParam(defaultValue = "10") Integer pageSize) {
         // 处理获取粉丝列表逻辑
-        return null;
+        return Result.success(userService.getFollowersList(userId, pageNum, pageSize));
     }
 }

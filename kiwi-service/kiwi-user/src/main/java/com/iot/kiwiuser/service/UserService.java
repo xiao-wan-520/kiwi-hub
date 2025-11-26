@@ -1,6 +1,9 @@
 package com.iot.kiwiuser.service;
 
+import com.iot.common.result.PageResult;
 import com.iot.common.result.Result;
+import com.iot.kiwiuser.model.dto.UserProfileDTO;
+import com.iot.kiwiuser.model.vo.UserCardVO;
 import com.iot.kiwiuser.model.vo.UserDetailVO;
 
 /**
@@ -30,4 +33,29 @@ public interface UserService {
      * @return 响应结果
      */
     Result<Object> unfollow(String userId, String followUserId);
+
+    /**
+     * 更新用户信息
+     * @param userId 用户ID
+     * @param profileDTO 用户信息
+     */
+    void updateProfile(String userId, UserProfileDTO profileDTO);
+
+    /**
+     * 获取用户关注列表
+     * @param userId 用户ID
+     * @param pageNum 页码
+     * @param pageSize 页大小
+     * @return 关注列表
+     */
+    PageResult<UserCardVO> getFollowingList(String userId, Integer pageNum, Integer pageSize);
+
+    /**
+     * 获取用户粉丝列表
+     * @param userId 用户ID
+     * @param pageNum 页码
+     * @param pageSize 页大小
+     * @return 粉丝列表
+     */
+    PageResult<UserCardVO> getFollowersList(String userId, Integer pageNum, Integer pageSize);
 }
