@@ -62,7 +62,8 @@ public class ArticleController {
      * @return 文章详情
      */
     @GetMapping
-    public Result<Article> getArticleDetail(@RequestParam("articleId") String articleId) {
-        return Result.success(articleService.getArticleDetail(articleId));
+    public Result<Article> getArticleDetail(@RequestHeader(HttpHeader.USER_ID) String userId,
+                                            @RequestParam("articleId") String articleId) {
+        return Result.success(articleService.getArticleDetail(userId, articleId));
     }
 }

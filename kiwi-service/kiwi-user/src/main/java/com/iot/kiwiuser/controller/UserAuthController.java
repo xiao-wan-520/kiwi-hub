@@ -66,7 +66,6 @@ public class UserAuthController {
      */
     @PostMapping("/logout")
     public Result<Object> logout(HttpSession session, @RequestHeader(HttpHeader.USER_ID) String id) {
-        System.out.println(id);
         // 处理登出逻辑
         // 销毁 Session，Redis 中对应的数据也会被删除
         session.invalidate();

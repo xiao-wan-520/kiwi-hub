@@ -16,3 +16,4 @@ spring:
     import:
       - nacos:kiwi-content-mongodb.yml
       - nacos:kiwi-content-rabbitmq.yml
+      - nacos:kiwi-content-redis.yml

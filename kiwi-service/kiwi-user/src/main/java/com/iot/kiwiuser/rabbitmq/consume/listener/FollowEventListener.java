@@ -22,8 +22,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class FollowEventListener {
 
-    private static final String FOLLOWER_COUNT = "socialStats.followerCount";
-    private static final String FOLLOWING_COUNT = "socialStats.followingCount";
+    private static final String FOLLOWER_COUNT = "social_stats.follower_count";
+    private static final String FOLLOWING_COUNT = "social_stats.following_count";
 
     private final MongoTemplate mongoTemplate;
 
@@ -45,18 +45,20 @@ public class FollowEventListener {
 
     private void updateStats(String followerId, String followingId, int value) {
         // 关注时 更新 粉丝(follower) 的 '关注数' (followingCount) + 1
-        mongoTemplate.updateFirst(
-                Query.query(Criteria.where("_id").is(followerId)
-                        .and(FOLLOWING_COUNT).gt(0)),
-                new Update().inc(FOLLOWING_COUNT, value),
-                User.class
-        );
+        doUpdate(followerId, value, FOLLOWING_COUNT);
 
         // 关注时 目标(target) 的 '粉丝数' (followerCount) + 1
+        doUpdate(followingId, value, FOLLOWER_COUNT);
+    }
+
+    private void doUpdate(String followerId, int value, String followingCount) {
+        Query query = Query.query(Criteria.where("_id").is(followerId));
+        if (value < 0) {
+            query.addCriteria(Criteria.where(followingCount).gt(0));
+        }
         mongoTemplate.updateFirst(
-                Query.query(Criteria.where("_id").is(followingId)
-                        .and(FOLLOWER_COUNT).gt(0)),
-                new Update().inc(FOLLOWER_COUNT, value),
+                query,
+                new Update().inc(followingCount, value),
                 User.class
         );
     }

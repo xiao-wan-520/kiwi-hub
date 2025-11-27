@@ -5,6 +5,7 @@ import com.iot.kiwiuser.model.dto.UserLoginDTO;
 import com.iot.kiwiuser.model.dto.UserRegisterDTO;
 import com.iot.kiwiuser.model.pojo.User;
 import com.iot.kiwiuser.model.pojo.UserProfile;
+import com.iot.kiwiuser.model.pojo.UserStats;
 import com.iot.kiwiuser.repository.UserRepository;
 import com.iot.kiwiuser.service.UserAuthService;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,7 @@ public class UserAuthServiceImpl implements UserAuthService {
                 .username(username)
                 .email(email)
                 .passwordHash(passwordHash)
+                .socialStats(new UserStats())
                 .createdAt(LocalDateTime.now())
                 .build();
         String avatarUrl = null;

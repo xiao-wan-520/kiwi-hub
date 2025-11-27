@@ -12,4 +12,9 @@ public class RabbitConstant {
     public static final String USER_RECOVERY_EXCHANGE = "kiwi-user-recovery-exchange";
     public static final String USER_RECOVERY_QUEUE = "kiwi-user-recovery-queue";
     public static final String USER_RECOVERY_ROUTING_KEY = "recovery.error";
+
+    // 文章服务相关
+    public static final String ARTICLE_USER_EXCHANGE = "kiwi-article-user-exchange";
+    public static final String ARTICLE_USER_QUEUE = "kiwi-article-user-queue";
+    public static final String USER_ARTICLE_KEY = "user.article";
 }

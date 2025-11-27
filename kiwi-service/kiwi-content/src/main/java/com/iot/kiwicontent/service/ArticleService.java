@@ -41,8 +41,9 @@ public interface ArticleService {
     /**
      * 获取文章详情
      *
+     * @param userId 用户ID
      * @param articleId 文章ID
      * @return 文章详情
      */
-    Article getArticleDetail(String articleId);
+    Article getArticleDetail(String userId, String articleId);
 }

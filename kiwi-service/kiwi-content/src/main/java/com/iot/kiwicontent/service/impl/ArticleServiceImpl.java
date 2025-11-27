@@ -2,12 +2,16 @@ package com.iot.kiwicontent.service.impl;
 
 import com.iot.common.result.PageResult;
 import com.iot.common.result.Result;
+import com.iot.kiwicontent.model.constant.ParameterConstant;
+import com.iot.kiwicontent.model.constant.RabbitConstant;
 import com.iot.kiwicontent.model.dto.PublishArticleDTO;
 import com.iot.kiwicontent.model.pojo.Article;
+import com.iot.kiwicontent.model.pojo.ArticleStats;
 import com.iot.kiwicontent.model.vo.ArticleListVO;
 import com.iot.kiwicontent.repository.ArticleRepository;
 import com.iot.kiwicontent.service.ArticleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +22,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author wan
@@ -27,6 +32,7 @@ import java.util.List;
 public class ArticleServiceImpl implements ArticleService {
 
     private final ArticleRepository articleRepository;
+    private final RabbitTemplate rabbitTemplate;
 
     /**
      * 发表文章
@@ -40,6 +46,7 @@ public class ArticleServiceImpl implements ArticleService {
                 .authorId(userId)
                 .title(publishArticleDTO.getTitle())
                 .content(publishArticleDTO.getContent())
+                .stats(new ArticleStats())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -52,6 +59,14 @@ public class ArticleServiceImpl implements ArticleService {
         article.setTags(tags);
         articleRepository.save(article);
         // TODO: RabbitMQ 通知粉丝
+        // 通知用户服务增加文章数
+        Map<String, String> message = Map.of(
+                ParameterConstant.AUTHOR_ID, userId,
+                ParameterConstant.ACTION, ParameterConstant.ARTICLE_PUBLISH
+                );
+        rabbitTemplate.convertAndSend(
+                RabbitConstant.ARTICLE_USER_EXCHANGE,
+                RabbitConstant.USER_ARTICLE_KEY, message);
     }
 
     /**
@@ -68,6 +83,14 @@ public class ArticleServiceImpl implements ArticleService {
             return Result.fail().message("文章不存在或无权删除该文章");
         }
         articleRepository.deleteById(articleId);
+        // RabbitMQ 删除文章数
+        Map<String, String> message = Map.of(
+                ParameterConstant.AUTHOR_ID, userId,
+                ParameterConstant.ACTION, ParameterConstant.ARTICLE_DELETE
+        );
+        rabbitTemplate.convertAndSend(
+                RabbitConstant.ARTICLE_USER_EXCHANGE,
+                RabbitConstant.USER_ARTICLE_KEY, message);
         return Result.success();
     }
 
@@ -94,13 +117,20 @@ public class ArticleServiceImpl implements ArticleService {
 
     /**
      * 获取文章详情
-     *
+     * @param userId 用户ID
      * @param articleId 文章ID
      * @return 文章详情
      */
     @Override
-    public Article getArticleDetail(String articleId) {
-        // TODO RabbitMQ增加阅读量，作者自己的话不需要增加
-        return articleRepository.findById(articleId).orElse(null);
+    public Article getArticleDetail(String userId, String articleId) {
+        Article article = articleRepository.findById(articleId)
+                .orElse(Article.builder().build());
+        // 发送文章浏览事件
+        rabbitTemplate.convertAndSend(RabbitConstant.ARTICLE_INTERACTION_EXCHANGE,
+                RabbitConstant.ARTICLE_VIEW_ROUTING_KEY,
+                Map.of(ParameterConstant.ARTICLE_ID, articleId,
+                        ParameterConstant.CURRENT_USER_ID, userId,
+                        ParameterConstant.ACTION, ParameterConstant.INCREASE));
+        return article;
     }
 }

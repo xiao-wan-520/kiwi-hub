@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * 文章互动消息队列配置类
+ * 观看数、点赞数、评论数消息队列配置类
  * @author wan
  */
 @Configuration
@@ -20,19 +21,53 @@ public class ArticleRabbitConfig {
     }
 
     @Bean
-    public Queue articleInteractionQueue() {
+    public Queue articleViewQueue() {
         return QueueBuilder
-                .durable(RabbitConstant.ARTICLE_INTERACTION_QUEUE)
+                .durable(RabbitConstant.ARTICLE_VIEW_QUEUE)
                 .build();
     }
 
 
     // 绑定 RoutingKey
     @Bean
-    public Binding articleInteractionBinding(Queue articleInteractionQueue, Exchange articleInteractionExchange) {
-        return BindingBuilder.bind(articleInteractionQueue)
+    public Binding articleViewBinding(Queue articleViewQueue, Exchange articleInteractionExchange) {
+        return BindingBuilder.bind(articleViewQueue)
                 .to(articleInteractionExchange)
-                .with(RabbitConstant.ARTICLE_INTERACTION_ROUTING_KEY)
+                .with(RabbitConstant.ARTICLE_VIEW_ROUTING_KEY)
+                .noargs();
+    }
+
+    @Bean
+    public Queue articleLikeQueue() {
+        return QueueBuilder
+                .durable(RabbitConstant.ARTICLE_LIKE_QUEUE)
+                .build();
+    }
+
+
+    // 绑定 RoutingKey
+    @Bean
+    public Binding articleLikeBinding(Queue articleLikeQueue, Exchange articleInteractionExchange) {
+        return BindingBuilder.bind(articleLikeQueue)
+                .to(articleInteractionExchange)
+                .with(RabbitConstant.ARTICLE_LIKE_ROUTING_KEY)
+                .noargs();
+    }
+
+    @Bean
+    public Queue articleCommentQueue() {
+        return QueueBuilder
+                .durable(RabbitConstant.ARTICLE_COMMENT_QUEUE)
+                .build();
+    }
+
+
+    // 绑定 RoutingKey
+    @Bean
+    public Binding articleCommentBinding(Queue articleCommentQueue, Exchange articleInteractionExchange) {
+        return BindingBuilder.bind(articleCommentQueue)
+                .to(articleInteractionExchange)
+                .with(RabbitConstant.ARTICLE_COMMENT_ROUTING_KEY)
                 .noargs();
     }
 

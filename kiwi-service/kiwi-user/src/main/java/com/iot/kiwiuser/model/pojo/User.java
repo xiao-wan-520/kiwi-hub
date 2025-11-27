@@ -31,9 +31,12 @@ public class User {
     @Field(name = "password_hash")
     private String passwordHash;
 
+    @Field(name = "created_at")
     private LocalDateTime createdAt;
 
     // 嵌入文档
     private UserProfile profile;
+
+    @Field(name = "social_stats")
     private UserStats socialStats;
 }
